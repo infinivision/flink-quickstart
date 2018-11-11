@@ -29,6 +29,7 @@ under the License.
 		<module>kafka</module>
 		<module>calcite</module>
 		<module>batch</module>
+		<module>rpc</module>
 	</modules>
 	<packaging>pom</packaging>
 
@@ -107,6 +108,36 @@ under the License.
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>scala-maven-plugin</artifactId>
+				<version>3.2.2</version>
+				<executions>
+					<execution>
+						<id>scala-compile-first</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>add-source</goal>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<!--includes是一个数组，包含要编译的code-->
+							<includes>
+								<include>**/*.scala</include>
+							</includes>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>scala-test-compile</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
