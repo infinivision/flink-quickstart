@@ -32,6 +32,14 @@ public class CompletableFutureAcceptEither {
             return 10;
         });
 
+        futureThenApply.completeExceptionally(new Throwable("Exception Occur"));
+
+        try {
+            Object result = futureThenApply.get();
+            System.out.println("result: " + result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
