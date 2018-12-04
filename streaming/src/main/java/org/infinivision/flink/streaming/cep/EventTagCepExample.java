@@ -2,6 +2,7 @@ package org.infinivision.flink.streaming.cep;
 
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.typeinfo.Types;
+import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.cep.CEP;
 import org.apache.flink.cep.nfa.aftermatch.AfterMatchSkipStrategy;
@@ -41,9 +42,10 @@ public class EventTagCepExample {
                 kafkaProps);
         kafkaConsumer011.setStartFromEarliest();
 
-        DataStream<EventTag> input = env.addSource(kafkaConsumer011);
+        DataStream<EventTag> input = env.addSource(kafkaConsumer011)
+                .keyBy(new EventTagKeySelector());
 
-        AfterMatchSkipStrategy matchSkipStrategy = AfterMatchSkipStrategy.skipPastLastEvent();
+        AfterMatchSkipStrategy matchSkipStrategy = AfterMatchSkipStrategy.noSkip();
         // construct the cep pattern
         Pattern<EventTag, ?> pattern = Pattern.<EventTag>begin("start", matchSkipStrategy).optional()
                 .followedBy("gender").where(new SimpleCondition<EventTag>() {
@@ -80,7 +82,7 @@ public class EventTagCepExample {
         DataStream<Tuple2<Integer, String>> result = CEP.pattern(input, pattern).flatSelect((p, o) -> {
 
             System.out.println();
-            System.out.println("===Pattern Matched====");
+//            System.out.println("===Pattern Matched====");
             if (p.containsKey("gender")) {
                 for (EventTag event : p.get("gender")) {
                     System.out.println("Events: " + Tuple2.of(event.getId(), "gender"));
@@ -125,5 +127,12 @@ public class EventTagCepExample {
             System.out.println(r);
         }
 
+    }
+
+    private static class EventTagKeySelector implements KeySelector<EventTag, Integer> {
+        @Override
+        public Integer getKey(EventTag value) {
+            return value.getId();
+        }
     }
 }
