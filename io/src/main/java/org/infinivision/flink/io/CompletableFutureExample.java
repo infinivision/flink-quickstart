@@ -9,40 +9,102 @@ public class CompletableFutureExample {
 
         runAsync();
 
+        // then compose
+        runThenCompose();
+
+
+        // then combine
+        runThenCombine();
+
+
     }
 
-    public static void runAsync() throws Exception{
-        CompletableFuture cf = CompletableFuture.supplyAsync(new Supplier<String>() {
+    private static void runThenCompose() throws Exception {
+        CompletableFuture<String> cf = CompletableFuture.supplyAsync(new Supplier<String>() {
             @Override
             public String get() {
                 try {
-                    System.out.println("sleep 1s");
+                    System.out.println("Supply Async sleep 1s");
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                return "Hello World";
+                return "Supply Async";
             }
         });
 
-        if (!cf.isDone()) {
-            System.out.println("Future was not done");
+        CompletableFuture<String> future = cf.thenCompose(s -> {
+            return CompletableFuture.supplyAsync( () -> {
+                return s + " Word";
+            });
+        });
+
+        System.out.println(future.get());
+    }
+
+    private static void runThenCombine() throws Exception {
+        CompletableFuture<String> cf1 = CompletableFuture.supplyAsync(new Supplier<String>() {
+            @Override
+            public String get() {
+                try {
+                    System.out.println("Future1 sleep 1s");
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return "Future1";
+            }
+        });
+
+        CompletableFuture<String> cf2 = CompletableFuture.supplyAsync(new Supplier<String>() {
+            @Override
+            public String get() {
+                try {
+                    System.out.println("Future2 sleep 1s");
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return "Future2";
+            }
+        });
+
+        CompletableFuture<String> future = cf1.thenCombine(cf2, (f1, f2) -> {
+            System.out.println("Combine the two future");
+            return f1+f2;
+        });
+
+        System.out.println(future.get());
+    }
+    private static void runAsync() throws Exception{
+        CompletableFuture<String> cf = CompletableFuture.supplyAsync(new Supplier<String>() {
+            @Override
+            public String get() {
+                try {
+                    System.out.println("Supply Async sleep 1s");
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return "Supply Async";
+            }
+        });
+
+        CompletableFuture<String> cf1 = cf.thenApply((s)->{
+            System.out.println("Received SupplyAsync Result");
+            try {
+                System.out.println("Then Supply sleep 1s");
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return s + " ThenApply";
+        });
+
+        if (!cf1.isDone()) {
+            System.out.println("task has not been finished");
         }
 
-        System.out.println(cf.get());
-
-        CompletableFuture<Void> cf1 = CompletableFuture.runAsync(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("RunAsync");
-            }
-        });
-
-        cf1.thenApply(new Function<Void, Object>() {
-            @Override
-            public Object apply(Void aVoid) {
-                return "RunAsyncApply";
-            }
-        });
+        System.out.println("result: " + cf1.get());
     }
 }
