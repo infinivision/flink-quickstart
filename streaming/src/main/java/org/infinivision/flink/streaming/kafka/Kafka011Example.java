@@ -16,8 +16,8 @@ import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrderness
 import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer011;
-import org.infinivision.flink.streaming.DataSet.TrainEvent;
-import org.infinivision.flink.streaming.DataSet.TrainEventSchema;
+import org.infinivision.flink.streaming.entity.TrainEvent;
+import org.infinivision.flink.streaming.entity.TrainEventSchema;
 
 import javax.annotation.Nullable;
 
