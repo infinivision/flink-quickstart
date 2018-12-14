@@ -25,7 +25,6 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-java</artifactId>
             <version>${flink.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
 
         <!--flink formats-->
@@ -40,28 +39,24 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-json</artifactId>
             <version>${flink.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
 
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
 
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-table-common</artifactId>
             <version>${flink.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
 
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-table_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
 
         <dependency>
@@ -80,28 +75,24 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-s3-fs-hadoop</artifactId>
             <version>${flink.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
 
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-statebackend-rocksdb_2.11</artifactId>
+            <artifactId>flink-statebackend-rocksdb_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
 
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka-${kafka.version}_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
 
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-cep_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
 
         <dependency>
@@ -116,19 +107,6 @@
             <artifactId>jackson-core</artifactId>
             <version>2.7.9</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
-        <!--<dependency>-->
-            <!--<groupId>com.fasterxml.jackson.core</groupId>-->
-            <!--<artifactId>jackson-databind</artifactId>-->
-            <!--<version>2.7.9</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>com.fasterxml.jackson.module</groupId>-->
-            <!--<artifactId>jackson-module-jsonSchema</artifactId>-->
-            <!--<version>2.9.0</version>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -154,46 +132,127 @@
         <plugins>
 
             <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-            <version>3.0.0</version>
-            <executions>
-            <!-- Run shade goal on package phase -->
-            <execution>
-            <phase>package</phase>
-            <goals>
-                <goal>shade</goal>
-            </goals>
-            <configuration>
-            <artifactSet>
-                <excludes>
-                    <exclude>org.apache.flink:force-shading</exclude>
-                    <exclude>com.google.code.findbugs:jsr305</exclude>
-                    <exclude>org.slf4j:*</exclude>
-                    <exclude>log4j:*</exclude>
-                    <exclude>org.apache.commons:commons-collections4</exclude>
-                </excludes>
-            </artifactSet>
-            <filters>
-            <filter>
-                <!-- Do not copy the signatures in the META-INF folder.
-                Otherwise, this might cause SecurityExceptions when using the JAR. -->
-                <artifact>*:*</artifact>
-                <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                </excludes>
-            </filter>
-            </filters>
-                <!--<transformers>-->
-                    <!--<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
-                        <!--<mainClass>org.infinivision.flink.examples.stream.windowing.WindowWordCount</mainClass>-->
-                    <!--</transformer>-->
-                <!--</transformers>-->
-            </configuration>
-            </execution>
-            </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <!-- Run shade goal on package phase -->
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <excludes>
+                                    <!-- This list contains all dependencies of flink-dist
+                                    Everything else will be packaged into the fat-jar
+                                    -->
+                                    <exclude>org.apache.flink:flink-annotations</exclude>
+                                    <exclude>org.apache.flink:flink-shaded-hadoop2</exclude>
+                                    <exclude>org.apache.flink:flink-shaded-curator-recipes</exclude>
+                                    <exclude>org.apache.flink:flink-core</exclude>
+                                    <exclude>org.apache.flink:flink-java</exclude>
+                                    <exclude>org.apache.flink:flink-scala_${scala.binary.version}</exclude>
+                                    <exclude>org.apache.flink:flink-runtime_${scala.binary.version}</exclude>
+                                    <exclude>org.apache.flink:flink-optimizer_${scala.binary.version}</exclude>
+                                    <exclude>org.apache.flink:flink-clients_${scala.binary.version}</exclude>
+                                    <exclude>org.apache.flink:flink-avro_${scala.binary.version}</exclude>
+                                    <exclude>org.apache.flink:flink-examples-batch_${scala.binary.version}</exclude>
+                                    <exclude>org.apache.flink:flink-examples-streaming_${scala.binary.version}</exclude>
+                                    <exclude>org.apache.flink:flink-streaming-java_${scala.binary.version}</exclude>
+                                    <exclude>org.apache.flink:flink-streaming-scala_${scala.binary.version}</exclude>
+                                    <exclude>org.apache.flink:flink-scala-shell_${scala.binary.version}</exclude>
+                                    <exclude>org.apache.flink:flink-python</exclude>
+                                    <exclude>org.apache.flink:flink-metrics-core</exclude>
+                                    <exclude>org.apache.flink:flink-metrics-jmx</exclude>
+                                    <exclude>org.apache.flink:flink-statebackend-rocksdb_${scala.binary.version}</exclude>
+                                    <exclude>org.apache.flink:flink-table_${scala.binary.version}-</exclude>
+                                    <exclude>org.apache.flink:flink-table-common-</exclude>
+                                    <exclude>org.apache.flink:flink-s3-fs-hadoop-</exclude>
+                                    <exclude>org.apache.flink:flink-cep_${scala.binary.version}-</exclude>
+
+                                    <!-- Also exclude very big transitive dependencies of Flink
+
+                                    WARNING: You have to remove these excludes if your code relies on other
+                                    versions of these dependencies.
+
+                                    -->
+
+                                    <exclude>log4j:log4j</exclude>
+                                    <exclude>org.scala-lang:scala-library</exclude>
+                                    <exclude>org.scala-lang:scala-compiler</exclude>
+                                    <exclude>org.scala-lang:scala-reflect</exclude>
+                                    <exclude>io.netty:netty-all</exclude>
+                                    <exclude>io.netty:netty</exclude>
+                                    <exclude>commons-fileupload:commons-fileupload</exclude>
+                                    <exclude>org.apache.avro:avro</exclude>
+                                    <exclude>commons-collections:commons-collections</exclude>
+                                    <exclude>org.codehaus.jackson:jackson-core-asl</exclude>
+                                    <exclude>org.codehaus.jackson:jackson-mapper-asl</exclude>
+                                    <exclude>com.thoughtworks.paranamer:paranamer</exclude>
+                                    <exclude>org.xerial.snappy:snappy-java</exclude>
+                                    <exclude>org.apache.commons:commons-compress</exclude>
+                                    <exclude>org.tukaani:xz</exclude>
+                                    <exclude>com.esotericsoftware.kryo:kryo</exclude>
+                                    <exclude>com.esotericsoftware.minlog:minlog</exclude>
+                                    <exclude>org.objenesis:objenesis</exclude>
+                                    <exclude>com.twitter:chill_*</exclude>
+                                    <exclude>com.twitter:chill-java</exclude>
+                                    <exclude>commons-lang:commons-lang</exclude>
+                                    <exclude>junit:junit</exclude>
+                                    <exclude>org.apache.commons:commons-lang3</exclude>
+                                    <exclude>org.slf4j:slf4j-api</exclude>
+                                    <exclude>org.slf4j:slf4j-log4j12</exclude>
+                                    <exclude>log4j:log4j</exclude>
+                                    <exclude>org.apache.commons:commons-math</exclude>
+                                    <exclude>org.apache.sling:org.apache.sling.commons.json</exclude>
+                                    <exclude>commons-logging:commons-logging</exclude>
+                                    <exclude>commons-codec:commons-codec</exclude>
+                                    <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
+                                    <exclude>com.fasterxml.jackson.core:jackson-databind</exclude>
+                                    <exclude>com.fasterxml.jackson.core:jackson-annotations</exclude>
+                                    <exclude>stax:stax-api</exclude>
+                                    <exclude>com.typesafe:config</exclude>
+                                    <exclude>org.uncommons.maths:uncommons-maths</exclude>
+                                    <exclude>com.github.scopt:scopt_*</exclude>
+                                    <exclude>commons-io:commons-io</exclude>
+                                    <exclude>commons-cli:commons-cli</exclude>
+                                </excludes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>org.apache.flink:*</artifact>
+                                    <excludes>
+                                        <!-- exclude shaded google but include shaded curator -->
+                                        <exclude>org/apache/flink/shaded/com/**</exclude>
+                                        <exclude>web-docs/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <!-- Do not copy the signatures in the META-INF folder.
+                                    Otherwise, this might cause SecurityExceptions when using the JAR. -->
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <!-- If you want to use ./bin/flink run <quickstart jar> uncomment the following lines.
+                            This will add a Main-Class entry to the manifest file -->
+                            <!--
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.apache.flink.quickstart.StreamingJob</mainClass>
+                                </transformer>
+                            </transformers>
+                            -->
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
