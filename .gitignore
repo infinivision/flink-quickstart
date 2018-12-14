@@ -1,3 +1,10 @@
 *idea*
 .idea/*
 streaming/*
+batch/batch.iml
+calcite/calcite.iml
+io/io.iml
+kafka/kafka.iml
+rpc/rpc.iml
+streaming/streaming.iml
+quickstart.iml
