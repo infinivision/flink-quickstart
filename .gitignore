@@ -1,6 +1,5 @@
 *idea*
 .idea/*
-streaming/*
 batch/batch.iml
 calcite/calcite.iml
 io/io.iml

@@ -25,6 +25,7 @@
             <version>1.11.325</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>
