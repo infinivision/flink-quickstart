@@ -98,7 +98,7 @@ public class Producer extends Thread {
                 e.printStackTrace();
             }
             ++messageNo;
-            if (messageNo == 10) {
+            if (messageNo == 100) {
                 return;
             }
         }

@@ -7,6 +7,8 @@ import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.runtime.state.StateBackend;
+import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -20,6 +22,8 @@ import org.infinivision.flink.streaming.entity.TrainEvent;
 import org.infinivision.flink.streaming.entity.TrainEventSchema;
 
 import javax.annotation.Nullable;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * A simple example that shows how to read from and write to Kafka. This will read String messages
@@ -39,44 +43,42 @@ public class Kafka011Example {
 		// parse input arguments
 		final ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
-		if (parameterTool.getNumberOfParameters() < 4) {
-			System.out.println("Missing parameters!\n" +
-					"Usage: Kafka --input-topic <topic> --output-topic <topic> " +
-					"--bootstrap.servers <kafka brokers> " +
-					"--group.id <some id>");
-			return;
-		}
+        InputStream inputStream = Kafka011Example.class.getClassLoader().getResourceAsStream("kafka.properties");
+        Properties properties = new Properties();
+        properties.load(inputStream);
 
-		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+//        Configuration configuration = new Configuration();
+//        configuration.setString("akka.ask.timeout", "10 h");
+//        final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(1, configuration);
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.getConfig().disableSysoutLogging();
 		env.getConfig().setRestartStrategy(RestartStrategies.fixedDelayRestart(4, 10000));
-		env.enableCheckpointing(60000); // create a checkpoint every 5 seconds
+		env.enableCheckpointing(1000); // create a checkpoint every 5 seconds
 		env.getConfig().setGlobalJobParameters(parameterTool); // make parameters available in the web interface
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
 		// set the parallelism to 3 for multiple partitions read
 		env.setParallelism(3);
 
-		// set the state backend per job
-//        env.setStateBackend(new FsStateBackend("s3://flink/flink-checkpoints"));
 
 		DataStream<TrainEvent> input = env
 				.addSource(
 					new FlinkKafkaConsumer011<>(
-						parameterTool.getRequired("input-topic"),
+						properties.getProperty("input-topic"),
 						new TrainEventSchema(),
-						parameterTool.getProperties())
+						properties)
 					.assignTimestampsAndWatermarks(new CustomWatermarkExtractor()))
 				.keyBy("uid")
 				.map(new RollingAdditionMapper());
 
 		input.addSink(
 				new FlinkKafkaProducer011<>(
-						parameterTool.getRequired("output-topic"),
+						properties.getProperty("output-topic", "test-output"),
 						new TrainEventSchema(),
-						parameterTool.getProperties()));
+						properties));
 
 		env.execute("Kafka 0.11 Example");
+
 	}
 
 	/**
