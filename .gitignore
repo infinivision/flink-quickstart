@@ -7,3 +7,6 @@ kafka/kafka.iml
 rpc/rpc.iml
 streaming/streaming.iml
 quickstart.iml
+checkpoints
+savepoints
+outputs
