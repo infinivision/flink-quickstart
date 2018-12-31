@@ -17,8 +17,6 @@ import org.apache.flink.streaming.connectors.fs.bucketing.BucketingSink;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
 import org.infinivision.flink.streaming.entity.TrainEvent;
 import org.infinivision.flink.streaming.entity.TrainEventSchema;
-import org.infinivision.flink.streaming.kafka.Kafka011Example;
-
 import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.Properties;

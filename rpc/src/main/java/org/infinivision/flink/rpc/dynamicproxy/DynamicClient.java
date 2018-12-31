@@ -9,6 +9,7 @@ public class DynamicClient {
         Class[] interfaces = new Class<?>[2];
         interfaces[0] = Person.class;
         interfaces[1] = Education.class;
+        System.getProperties().put("sun.misc.ProxyGenerator.saveGeneratedFiles","true");
         Object proxy = Proxy.newProxyInstance(classLoader, interfaces, new DynamicProxy());
         System.out.println("Proxy Class: " + proxy.getClass().getName());
         System.out.println("===constructor====");
