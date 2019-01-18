@@ -32,7 +32,7 @@ public class KeyWordCount {
         final int port;
         try {
             final ParameterTool params = ParameterTool.fromArgs(args);
-            hostname = params.get("hostname", "172.19.0.108") ;
+            hostname = params.get("hostname", "localhost") ;
             port = params.getInt("port", 9999);
 
             // make parameters available in the web interface
