@@ -22,22 +22,22 @@ public class FinSources {
                 sc.collectWithTimestamp(new Trade(10000L, 0L, "trade-1000"), 10000);
                 sc.emitWatermark(new Watermark(10000));
                 Thread.sleep(3000);
-                sc.collectWithTimestamp(new Trade(11000L, 0L, "trade-1200"), 11000);
-                sc.collectWithTimestamp(new Trade(12000L, 0L, "trade-1200"), 12000);
+                sc.collectWithTimestamp(new Trade(11000L, 1L, "trade-1200"), 11000);
+                sc.collectWithTimestamp(new Trade(12000L, 1L, "trade-1200"), 12000);
                 sc.emitWatermark(new Watermark(12000));
                 Thread.sleep(1000);
                 sc.collectWithTimestamp(new Trade(15000L, 0L, "trade-1500"), 15000);
                 sc.emitWatermark(new Watermark(15000));
                 Thread.sleep(1000);
                 sc.collectWithTimestamp(new Trade(17000L, 0L, "trade-1700"), 17000);
-                sc.emitWatermark(new Watermark(1700));
+                sc.emitWatermark(new Watermark(17000));
                 Thread.sleep(1000);
                 sc.collectWithTimestamp(new Trade(18000L, 0L, "trade-1800"), 18000);
                 sc.emitWatermark(new Watermark(18000));
                 Thread.sleep(1000);
                 sc.collectWithTimestamp(new Trade(20000L, 0L, "trade-2000"), 20000);
-                sc.emitWatermark(new Watermark(24998));
                 sc.collectWithTimestamp(new Trade(24999L, 0L, "trade-2000"), 24999);
+                sc.emitWatermark(new Watermark(24999));
 
 
                 while (running) {
