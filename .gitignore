@@ -28,3 +28,7 @@ savepoints
 testdata
 resources
 outputs
+io/io.iml
+batch/batch.iml
+streaming/streaming.iml
+
