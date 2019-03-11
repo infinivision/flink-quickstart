@@ -31,4 +31,6 @@ outputs
 io/io.iml
 batch/batch.iml
 streaming/streaming.iml
-
+calcite/calcite.iml
+kafka/kafka.iml
+rpc/rpc.iml
